@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomNames: Room
-  roomAmount: 1
+  roomAmount: 2
   roomWidth: 1
   roomLength: 1
   roomHeight: 1
@@ -304,8 +304,11 @@ MonoBehaviour:
   ceilingMaterial: {fileID: 0}
   baseRoom: {fileID: 740249992319555461, guid: 0256fc0d48330be42a0e9c14db317bc1, type: 3}
   doorPrefab: {fileID: 0}
-  objects: []
-  savePath: DungeonGenerator\Prefabs\Rooms\
+  objects:
+  - objectAmount: 2
+    objectPrefab: {fileID: 9132236775439478619, guid: 0c0c83826ab5aac4781d22ab1bd3112c,
+      type: 3}
+  savePath: DungeonGenerator/Prefabs/Rooms/
 --- !u!4 &986959569
 Transform:
   m_ObjectHideFlags: 0
