@@ -31,22 +31,26 @@ public class DGG_RoomGenerator : MonoBehaviour {
 	private ObjectList[] objects;
 	[Space(25)]
 	[SerializeField]
-	private string savePath = "Assets/DungeonGenerator/Prefabs/Rooms/";
+	private string savePath = "DungeonGenerator/Prefabs/Rooms/";
 
 	public void Generate(){
 		int _nameCounter = 1;
 
 		for(int i = 0; i < roomAmount; i++) {
 			string _newName = roomNames + _nameCounter.ToString();
-			while(File.Exists(savePath + _newName)) {
+
+			while(File.Exists("Assets/" + savePath + _newName + ".prefab")) {
 				_nameCounter++;
 				_newName = roomNames + _nameCounter.ToString();
+				print("new name");
 			}
 
-			//GameObject _newRoom = Instantiate(baseRoom);
 			GameObject _newRoom = (GameObject) PrefabUtility.InstantiatePrefab(baseRoom);
 			_newRoom.name = _newName;
-			PrefabUtility.SaveAsPrefabAsset(_newRoom, savePath);
+
+			string path = Path.Combine(Application.dataPath, savePath);
+			path.Replace("\\", "/");
+			PrefabUtility.SaveAsPrefabAsset(_newRoom, path + _newName +".prefab");
 		}
     }
 
