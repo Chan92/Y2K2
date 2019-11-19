@@ -10,28 +10,69 @@ public class ObjectList {
 	public Transform objectPrefab;
 }
 
-public class DGG_RoomGenerator : MonoBehaviour {
-	[SerializeField]
+public class DGG_RoomGenerator : EditorWindow {
 	private string roomNames = "Room";
-	[SerializeField]
 	private int roomAmount = 1;
-	[SerializeField]
-	private int roomWidth = 1, roomLength = 1, roomHeight = 1;
-	[SerializeField][Range(1, 4)]
-	private int doorAmount = 1;
-	[SerializeField]
 	private RoomType roomType;
-	[SerializeField]
+	private int roomWidth = 1, roomLength = 1, roomHeight = 1;
 	private Material groundMaterial, wallMaterial, ceilingMaterial;
-	[SerializeField]
 	private GameObject baseRoom;
-	[SerializeField]
+	private int doorAmount = 1;
+	private const int minDoors = 1, maxDoors = 4;
 	private Transform doorPrefab;
-	[SerializeField]
 	private ObjectList[] objects;
 	[Space(25)]
-	[SerializeField]
 	private string savePath = "DungeonGenerator/Prefabs/Rooms/";
+
+	[MenuItem("Window/DungeonGenerator")]
+	public static void ShowWindow() {
+		GetWindow<DGG_RoomGenerator>("DungeonGenerator");
+	}
+
+	private void OnGUI() {
+		GUILayout.BeginHorizontal();
+		roomNames = EditorGUILayout.TextField("Room Names", roomNames);
+		roomAmount = EditorGUILayout.IntField("Amount", roomAmount);
+		roomType = (RoomType)EditorGUILayout.EnumPopup("Type", roomType);
+		GUILayout.EndHorizontal();
+
+		GUILayout.BeginHorizontal();
+		roomWidth = EditorGUILayout.IntField("Width", roomWidth);
+		roomLength = EditorGUILayout.IntField("Length", roomLength);
+		roomHeight = EditorGUILayout.IntField("Height", roomHeight);
+		GUILayout.EndHorizontal();
+
+		GUILayout.BeginHorizontal();
+#pragma warning disable CS0618 // Type or member is obsolete
+		groundMaterial = (Material)EditorGUILayout.ObjectField("Ground Material", groundMaterial, objType: typeof(Material));
+		wallMaterial = (Material) EditorGUILayout.ObjectField("Wall Material", wallMaterial, objType: typeof(Material));
+		ceilingMaterial = (Material) EditorGUILayout.ObjectField("Ceiling Material", ceilingMaterial, objType: typeof(Material));
+#pragma warning restore CS0618 // Type or member is obsolete
+		GUILayout.EndHorizontal();
+
+#pragma warning disable CS0618 // Type or member is obsolete
+		baseRoom = (GameObject)EditorGUILayout.ObjectField("Base Room", baseRoom, objType: typeof(GameObject));
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		GUILayout.BeginHorizontal();
+		doorAmount = EditorGUILayout.IntSlider("Door Amount", doorAmount, minDoors, maxDoors);
+#pragma warning disable CS0618 // Type or member is obsolete
+		doorPrefab = (Transform) EditorGUILayout.ObjectField("Door", doorPrefab, objType: typeof(Transform));
+#pragma warning restore CS0618 // Type or member is obsolete
+		GUILayout.EndHorizontal();
+		EditorGUILayout.Space();
+
+		//objects list
+
+
+		EditorGUILayout.Space();
+		savePath = EditorGUILayout.TextField("Save Path", savePath);
+		if(GUILayout.Button("Generate rooms")) {
+			Generate();
+		}
+	}
+
+
 
 	public void Generate(){
 		//start with 1 as non-developers arent used to start counting by 0
