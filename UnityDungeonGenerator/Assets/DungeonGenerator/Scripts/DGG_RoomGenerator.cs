@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 
 [System.Serializable]
 public class ObjectList {
+	[SerializeField]
 	public int objectAmount;
+	[SerializeField]
 	public Transform objectPrefab;
 }
 
@@ -20,9 +23,13 @@ public class DGG_RoomGenerator : EditorWindow {
 	private int doorAmount = 1;
 	private const int minDoors = 1, maxDoors = 4;
 	private Transform doorPrefab;
-	private ObjectList[] objects;
+	private int objectListSize;
+	[SerializeField]
+	private List<ObjectList> objects;
 	[Space(25)]
 	private string savePath = "DungeonGenerator/Prefabs/Rooms/";
+
+	
 
 	[MenuItem("Window/DungeonGenerator")]
 	public static void ShowWindow() {
@@ -62,17 +69,40 @@ public class DGG_RoomGenerator : EditorWindow {
 		GUILayout.EndHorizontal();
 		EditorGUILayout.Space();
 
-		//objects list
-
-
+		DrawObjectList();
 		EditorGUILayout.Space();
+
 		savePath = EditorGUILayout.TextField("Save Path", savePath);
 		if(GUILayout.Button("Generate rooms")) {
 			Generate();
 		}
 	}
 
+	private void DrawObjectList() {
+		SerializedObject _serializedObject = new SerializedObject(this);
+		ReorderableList _myList = new ReorderableList(_serializedObject, _serializedObject.FindProperty("objects"), true, true, true, true);
 
+		_myList.drawHeaderCallback = (Rect rect) => {
+			EditorGUI.LabelField(rect, "Objects to spawn");
+		};
+
+		if(_myList.count > 0) {
+			_myList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
+				var element = _myList.serializedProperty.GetArrayElementAtIndex(index);
+				rect.y += 2;
+
+				EditorGUI.PropertyField(
+					new Rect(rect.x, rect.y, 60, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("objectAmount"), GUIContent.none);
+				EditorGUI.PropertyField(
+					new Rect(rect.x + 60, rect.y, rect.width - 60 - 30, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("objectPrefab"), GUIContent.none);
+			};
+		}
+
+		_serializedObject.Update();
+		_myList.DoLayoutList();
+		_serializedObject.ApplyModifiedProperties();
+
+	}
 
 	public void Generate(){
 		//start with 1 as non-developers arent used to start counting by 0
@@ -108,18 +138,21 @@ public class DGG_RoomGenerator : EditorWindow {
 
 	//add objects to the room
 	private void FillRoom(Transform _room) {
-		if (objects.Length < 1) {
+		
+		Debug.Log(objects.Count);
+		if (objects.Count < 1) {
 			return;
 		}
 		
-		for (int i = 0; i < objects.Length; i++) {
-			if (objects[i].objectAmount >= 1) {
+		for (int i = 0; i < objects.Count; i++) {
+			if (objects[i].objectPrefab != null && objects[i].objectAmount >= 1) {
 				for(int _object = 0; _object < objects[i].objectAmount; _object++) {
 					Transform _newObject = Instantiate(objects[i].objectPrefab);
 					_newObject.parent = _room;
 				}
 			}
 		}
+		
 	}
 
 }
