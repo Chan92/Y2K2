@@ -304,7 +304,11 @@ MonoBehaviour:
   ceilingMaterial: {fileID: 0}
   baseRoom: {fileID: 0}
   doorPrefab: {fileID: 0}
-  objects: []
+  objects:
+  - objectAmount: 0
+    objectPrefab: {fileID: 0}
+  - objectAmount: 0
+    objectPrefab: {fileID: 0}
   savePath: DungeonGenerator/Prefabs/Rooms/
 --- !u!4 &986959569
 Transform:
