@@ -52,7 +52,7 @@ namespace Funtools.DungeonGenerator {
 
 		private void DrawObjectList() {
 			if(!RoomInfo.Instance.isInitialized) {
-				RoomInfo.Instance.myList = new ReorderableList(RoomInfo.Instance.serializedObject, RoomInfo.Instance.serializedObject.FindProperty("objects"), true, true, true, true) {
+				RoomInfo.Instance.myList = new ReorderableList(RoomInfo.Instance.SerializedObject, RoomInfo.Instance.SerializedObject.FindProperty("objects"), true, true, true, true) {
 					drawHeaderCallback = (Rect rect) => {
 						EditorGUI.LabelField(rect, "Objects to spawn");
 					}
@@ -78,9 +78,9 @@ namespace Funtools.DungeonGenerator {
 				};
 			}
 
-			RoomInfo.Instance.serializedObject.Update();
+			RoomInfo.Instance.SerializedObject.Update();
 			RoomInfo.Instance.myList.DoLayoutList();
-			RoomInfo.Instance.serializedObject.ApplyModifiedProperties();
+			RoomInfo.Instance.SerializedObject.ApplyModifiedProperties();
 		}
 	}
 }

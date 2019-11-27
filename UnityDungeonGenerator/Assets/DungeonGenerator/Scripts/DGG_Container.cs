@@ -28,7 +28,17 @@ namespace Funtools.DungeonGenerator {
 		public Material groundMaterial, wallMaterial, ceilingMaterial;
 		public Transform baseRoom, doorPrefab;
 		public ReorderableList myList;
-		public SerializedObject serializedObject;
+		private SerializedObject serializedObject;
+		public SerializedObject SerializedObject {
+			get {
+				if(serializedObject == null)
+					serializedObject = new SerializedObject(this);
+
+				return serializedObject;
+			} set {
+				serializedObject = value;
+			}
+		}
 		public bool isInitialized = false;
 
 		[SerializeField]
@@ -37,9 +47,5 @@ namespace Funtools.DungeonGenerator {
 
 		public string savePath = "DungeonGenerator/Prefabs/Rooms/";
 		public const int minDoors = 1, maxDoors = 4;
-
-		private void OnEnable() {
-			serializedObject = new SerializedObject(this);
-		}
 	}
 }

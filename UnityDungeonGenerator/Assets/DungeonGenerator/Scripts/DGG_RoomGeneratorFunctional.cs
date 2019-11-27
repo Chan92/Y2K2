@@ -6,7 +6,7 @@ namespace Funtools.DungeonGenerator {
 	public class DGG_RoomGeneratorFunctional :EditorWindow {
 		private float groundHeight = 0.2f;
 		private float wallThickness = 0.2f;
-		private GameObject roomCopy;
+		private GameObject newRoom;
 
 		static DGG_RoomGeneratorFunctional instance;
 		public static DGG_RoomGeneratorFunctional Instance {
@@ -36,21 +36,16 @@ namespace Funtools.DungeonGenerator {
 				if(RoomInfo.Instance.baseRoom == null) {
 					CreateBaseRoom();
 				} else {
-					//ModifyBaseRoom();
+					ModifyBaseRoom();
 				}
 
-				GameObject _newRoom = (GameObject) PrefabUtility.InstantiatePrefab(roomCopy);
+				AddRoomDoors(newRoom.transform);
+				FillRoom(newRoom.transform);
 
-				//GameObject _newRoom = (GameObject) PrefabUtility.InstantiatePrefab(baseRoom);
-				//_newRoom.transform.localScale = new Vector3(roomWidth, roomHeight, roomLength);
-				//AddRoomDoors(_newRoom.transform);
-				FillRoom(_newRoom.transform);
-
-				//save the room
 				string path = Path.Combine(Application.dataPath, RoomInfo.Instance.savePath);
 				path.Replace("\\", "/");
-				PrefabUtility.SaveAsPrefabAsset(_newRoom, path + _newName + ".prefab");
-				DestroyImmediate(_newRoom, false);
+				PrefabUtility.SaveAsPrefabAsset(newRoom, path + _newName + ".prefab");
+				DestroyImmediate(newRoom, false);
 			}
 		}
 
@@ -83,66 +78,77 @@ namespace Funtools.DungeonGenerator {
 
 		private void CreateBaseRoom() {
 			float _positionModifier = 1;
-			GameObject newBaseRoom = new GameObject("BaseRoom");
+			GameObject _newBaseRoom = new GameObject("BaseRoom");
 
-			GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			ground.name = "Ground";
-			ground.transform.localScale = new Vector3(RoomInfo.Instance.roomWidth, groundHeight, RoomInfo.Instance.roomLength);
-			ground.transform.parent = newBaseRoom.transform;
+			GameObject _ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			_ground.name = "Ground";
+			_ground.transform.localScale = new Vector3(RoomInfo.Instance.roomWidth, groundHeight, RoomInfo.Instance.roomLength);
+			_ground.transform.parent = _newBaseRoom.transform;
+			SetMaterial(_ground, RoomInfo.Instance.groundMaterial);
 
 			for(int i = 0; i < 4; i++) {
-				GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-				wall.name = "Wall " + (i + 1);
-				wall.transform.parent = newBaseRoom.transform;
-
-				if(i < 2) {
-					wall.transform.localScale = new Vector3(RoomInfo.Instance.roomWidth, RoomInfo.Instance.roomHeight, wallThickness);
-					wall.transform.localPosition = new Vector3(0, (RoomInfo.Instance.roomHeight + groundHeight) / 2, ((RoomInfo.Instance.roomLength - wallThickness) / 2) * _positionModifier);
-				} else {
-					wall.transform.localScale = new Vector3(wallThickness, RoomInfo.Instance.roomHeight, RoomInfo.Instance.roomLength);
-					wall.transform.localPosition = new Vector3(((RoomInfo.Instance.roomWidth - wallThickness) / 2) * _positionModifier, (RoomInfo.Instance.roomHeight + groundHeight) / 2, 0);
-				}
-
+				GameObject _wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				_wall.name = "Wall " + (i + 1);
+				_wall.transform.parent = _newBaseRoom.transform;
+				SetMaterial(_wall, RoomInfo.Instance.wallMaterial);
+				Repositioning(_wall.transform, i, _positionModifier);
 				_positionModifier *= -1;
 			}
 
 			Debug.Log("created");
-			roomCopy = (GameObject) PrefabUtility.InstantiatePrefab(newBaseRoom);
+			newRoom = _newBaseRoom;
 		}
 
 		private void ModifyBaseRoom() {
 			float _positionModifier = 1;
 
-			GameObject _baseRoomCopy = (GameObject) PrefabUtility.InstantiatePrefab(RoomInfo.Instance.baseRoom);
+			GameObject _baseRoomCopy = (GameObject) PrefabUtility.InstantiatePrefab(RoomInfo.Instance.baseRoom.gameObject);
 
 			Transform _groundObj = _baseRoomCopy.transform.Find("Ground");
 			if(_groundObj) {
 				Vector3 _oldGroundSize = _groundObj.localScale;
 				_groundObj.localScale = new Vector3(_oldGroundSize.x * RoomInfo.Instance.roomWidth, groundHeight, _oldGroundSize.z * RoomInfo.Instance.roomLength);
+				SetMaterial(_groundObj.gameObject, RoomInfo.Instance.groundMaterial);
 			}
 
-			for(int i = 0; i < 4; i++) {
+			for(int i = 0; i < _baseRoomCopy.transform.childCount; i++) {
 				Transform _wallObj;
 
 				_wallObj = _baseRoomCopy.transform.Find("Wall");
-				if(!_wallObj)
+				if(!_wallObj) {
 					_wallObj = _baseRoomCopy.transform.Find("Wall " + i);
+				}
 
 				if(_wallObj) {
-					if(i < 2) {
-						_wallObj.localScale = new Vector3(RoomInfo.Instance.roomWidth, RoomInfo.Instance.roomHeight, wallThickness);
-						_wallObj.localPosition = new Vector3(0, (RoomInfo.Instance.roomHeight + groundHeight) / 2, ((RoomInfo.Instance.roomLength - wallThickness) / 2) * _positionModifier);
-					} else {
-						_wallObj.localScale = new Vector3(wallThickness, RoomInfo.Instance.roomHeight, RoomInfo.Instance.roomLength);
-						_wallObj.localPosition = new Vector3(((RoomInfo.Instance.roomWidth - wallThickness) / 2) * _positionModifier, (RoomInfo.Instance.roomHeight + groundHeight) / 2, 0);
-					}
+					_wallObj.name = ("Wall " + i);
+					SetMaterial(_wallObj.gameObject, RoomInfo.Instance.wallMaterial);
+					Repositioning(_wallObj, i, _positionModifier);
 				}
 
 				_positionModifier *= -1;
 			}
 
 			Debug.Log("Scaled");
-			roomCopy = _baseRoomCopy;
+			newRoom = _baseRoomCopy;
+		}
+
+		private void SetMaterial(GameObject _obj, Material _mat) {
+			Renderer renderer = _obj.GetComponent<Renderer>();
+
+			if (renderer && _mat) {
+				renderer.material = _mat;
+			}
+		}
+
+		//setting the object  on the correct scale and position
+		private void Repositioning(Transform _obj, int _counter, float _positionModifier) {
+			if(_counter < 2) {
+				_obj.localScale = new Vector3(RoomInfo.Instance.roomWidth, RoomInfo.Instance.roomHeight, wallThickness);
+				_obj.localPosition = new Vector3(0, (RoomInfo.Instance.roomHeight + groundHeight) / 2, ((RoomInfo.Instance.roomLength - wallThickness) / 2) * _positionModifier);
+			} else {
+				_obj.localScale = new Vector3(wallThickness, RoomInfo.Instance.roomHeight, RoomInfo.Instance.roomLength);
+				_obj.localPosition = new Vector3(((RoomInfo.Instance.roomWidth - wallThickness) / 2) * _positionModifier, (RoomInfo.Instance.roomHeight + groundHeight) / 2, 0);
+			}
 		}
 
 		private Vector3 RandomPosition() {
