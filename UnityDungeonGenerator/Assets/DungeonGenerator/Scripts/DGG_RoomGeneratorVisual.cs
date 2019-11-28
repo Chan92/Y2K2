@@ -24,12 +24,12 @@ namespace Funtools.DungeonGenerator {
 			RoomInfo.Instance.roomLength = EditorGUILayout.IntField("Length", RoomInfo.Instance.roomLength);
 			GUILayout.EndHorizontal();
 
-			GUILayout.BeginHorizontal();
+
 #pragma warning disable CS0618 // Type or member is obsolete
+			GUILayout.BeginHorizontal();
 			RoomInfo.Instance.groundMaterial = (Material) EditorGUILayout.ObjectField("Ground Material", RoomInfo.Instance.groundMaterial, objType: typeof(Material));
 			RoomInfo.Instance.wallMaterial = (Material) EditorGUILayout.ObjectField("Wall Material", RoomInfo.Instance.wallMaterial, objType: typeof(Material));
 			RoomInfo.Instance.ceilingMaterial = (Material) EditorGUILayout.ObjectField("Ceiling Material", RoomInfo.Instance.ceilingMaterial, objType: typeof(Material));
-
 			GUILayout.EndHorizontal();
 
 			RoomInfo.Instance.baseRoom = (Transform) EditorGUILayout.ObjectField("Base Room", RoomInfo.Instance.baseRoom, objType: typeof(Transform));
@@ -37,9 +37,9 @@ namespace Funtools.DungeonGenerator {
 			GUILayout.BeginHorizontal();
 			RoomInfo.Instance.doorAmount = EditorGUILayout.IntSlider("Door Amount", RoomInfo.Instance.doorAmount, RoomInfo.minDoors, RoomInfo.maxDoors);
 			RoomInfo.Instance.doorPrefab = (Transform) EditorGUILayout.ObjectField("Door", RoomInfo.Instance.doorPrefab, objType: typeof(Transform));
-#pragma warning restore CS0618 // Type or member is obsolete
 			GUILayout.EndHorizontal();
 			EditorGUILayout.Space();
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			DrawObjectList();
 			EditorGUILayout.Space();
@@ -64,7 +64,6 @@ namespace Funtools.DungeonGenerator {
 				RoomInfo.Instance.myList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
 					var element = RoomInfo.Instance.myList.serializedProperty.GetArrayElementAtIndex(index);
 					rect.y += 2;
-
 
 					EditorGUI.LabelField(
 						new Rect(rect.x, rect.y, 50, EditorGUIUtility.singleLineHeight), "Amount");

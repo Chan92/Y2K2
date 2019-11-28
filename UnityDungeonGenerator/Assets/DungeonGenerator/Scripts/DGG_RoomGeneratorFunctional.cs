@@ -56,11 +56,9 @@ namespace Funtools.DungeonGenerator {
 		//add objects to the room
 		private void FillRoom(Transform _room) {
 			if(RoomInfo.Instance.objects == null) {
-				Debug.Log("itsnull");
 				return;
 			}
 
-			Debug.Log(RoomInfo.Instance.objects.Count);
 			if(RoomInfo.Instance.objects.Count < 1) {
 				return;
 			}
@@ -70,7 +68,7 @@ namespace Funtools.DungeonGenerator {
 					for(int _object = 0; _object < RoomInfo.Instance.objects[i].objectAmount; _object++) {
 						Transform _newObject = Instantiate(RoomInfo.Instance.objects[i].objectPrefab);
 						_newObject.parent = _room;
-						_newObject.localPosition = RandomPosition();
+						_newObject.localPosition = RandomPosition(_newObject.localScale, _room);
 					}
 				}
 			}
@@ -151,11 +149,16 @@ namespace Funtools.DungeonGenerator {
 			}
 		}
 
-		private Vector3 RandomPosition() {
+		private Vector3 RandomPosition(Vector3 _objSize, Transform _room) {
+			Vector3 _roomSize = _room.Find("Ground").localScale /2;
 
+			_roomSize.x -= _objSize.x/2;			 
+			_roomSize.z -= _objSize.z/2;
+			_roomSize.y += _objSize.y/2;
 
-
-			return Vector3.zero;
+			float _randomX = Random.Range(-_roomSize.x, _roomSize.x);
+			float _randomZ = Random.Range(-_roomSize.z, _roomSize.z);
+			return new Vector3(_randomX, _roomSize.y, _randomZ);
 		}
 	}
 }
