@@ -4,9 +4,10 @@ using UnityEditor;
 
 namespace Funtools.DungeonGenerator {
 	public class DGG_RoomGeneratorFunctional :EditorWindow {
+		private GameObject newRoom;
+		private float roomSizeMultiplier = 10f;
 		private float groundHeight = 0.2f;
 		private float wallThickness = 0.2f;
-		private GameObject newRoom;
 
 		static DGG_RoomGeneratorFunctional instance;
 		public static DGG_RoomGeneratorFunctional Instance {
@@ -45,12 +46,20 @@ namespace Funtools.DungeonGenerator {
 				string path = Path.Combine(Application.dataPath, RoomInfo.Instance.savePath);
 				path.Replace("\\", "/");
 				PrefabUtility.SaveAsPrefabAsset(newRoom, path + _newName + ".prefab");
-				DestroyImmediate(newRoom, false);
+				DestroyImmediate(newRoom, false);				
 			}
+
+			Debug.Log("Generated new room(s).");
+		}
+
+		private void SetRoomType(GameObject _obj) {
+			System.Type t = System.Type.GetType("Funtools.DungeonGenerator.DGG_RoomType");
+			_obj.AddComponent(t);
+			_obj.GetComponent<DGG_RoomType>().SetType(RoomInfo.Instance.roomType);
 		}
 
 		private void AddRoomDoors(Transform _room) {
-
+			//not yet inplemented
 		}
 
 		//add objects to the room
@@ -77,10 +86,11 @@ namespace Funtools.DungeonGenerator {
 		private void CreateBaseRoom() {
 			float _positionModifier = 1;
 			GameObject _newBaseRoom = new GameObject("BaseRoom");
+			SetRoomType(_newBaseRoom);
 
 			GameObject _ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
 			_ground.name = "Ground";
-			_ground.transform.localScale = new Vector3(RoomInfo.Instance.roomWidth, groundHeight, RoomInfo.Instance.roomLength);
+			_ground.transform.localScale = new Vector3(RoomInfo.Instance.roomWidth * roomSizeMultiplier, groundHeight, RoomInfo.Instance.roomLength * roomSizeMultiplier);
 			_ground.transform.parent = _newBaseRoom.transform;
 			SetMaterial(_ground, RoomInfo.Instance.groundMaterial);
 
@@ -93,19 +103,18 @@ namespace Funtools.DungeonGenerator {
 				_positionModifier *= -1;
 			}
 
-			Debug.Log("created");
 			newRoom = _newBaseRoom;
 		}
 
 		private void ModifyBaseRoom() {
 			float _positionModifier = 1;
-
 			GameObject _baseRoomCopy = (GameObject) PrefabUtility.InstantiatePrefab(RoomInfo.Instance.baseRoom.gameObject);
+			SetRoomType(_baseRoomCopy);
 
 			Transform _groundObj = _baseRoomCopy.transform.Find("Ground");
 			if(_groundObj) {
 				Vector3 _oldGroundSize = _groundObj.localScale;
-				_groundObj.localScale = new Vector3(_oldGroundSize.x * RoomInfo.Instance.roomWidth, groundHeight, _oldGroundSize.z * RoomInfo.Instance.roomLength);
+				_groundObj.localScale = new Vector3(roomSizeMultiplier * RoomInfo.Instance.roomWidth, groundHeight, roomSizeMultiplier * RoomInfo.Instance.roomLength);
 				SetMaterial(_groundObj.gameObject, RoomInfo.Instance.groundMaterial);
 			}
 
@@ -126,7 +135,6 @@ namespace Funtools.DungeonGenerator {
 				_positionModifier *= -1;
 			}
 
-			Debug.Log("Scaled");
 			newRoom = _baseRoomCopy;
 		}
 
@@ -140,15 +148,22 @@ namespace Funtools.DungeonGenerator {
 
 		//setting the object  on the correct scale and position
 		private void Repositioning(Transform _obj, int _counter, float _positionModifier) {
+			Vector3 _size = Vector3.one;
+			_size.x = RoomInfo.Instance.roomWidth;
+			_size.y = RoomInfo.Instance.roomHeight;
+			_size.z = RoomInfo.Instance.roomLength;
+			_size *= roomSizeMultiplier;
+
 			if(_counter < 2) {
-				_obj.localScale = new Vector3(RoomInfo.Instance.roomWidth, RoomInfo.Instance.roomHeight, wallThickness);
-				_obj.localPosition = new Vector3(0, (RoomInfo.Instance.roomHeight + groundHeight) / 2, ((RoomInfo.Instance.roomLength - wallThickness) / 2) * _positionModifier);
+				_obj.localScale = new Vector3(_size.x, _size.y, wallThickness);
+				_obj.localPosition = new Vector3(0, (_size.y + groundHeight) / 2, ((_size.z - wallThickness) / 2) * _positionModifier);
 			} else {
-				_obj.localScale = new Vector3(wallThickness, RoomInfo.Instance.roomHeight, RoomInfo.Instance.roomLength);
-				_obj.localPosition = new Vector3(((RoomInfo.Instance.roomWidth - wallThickness) / 2) * _positionModifier, (RoomInfo.Instance.roomHeight + groundHeight) / 2, 0);
+				_obj.localScale = new Vector3(wallThickness, _size.y, _size.z);
+				_obj.localPosition = new Vector3(((_size.x - wallThickness) / 2) * _positionModifier, (_size.y + groundHeight) / 2, 0);
 			}
 		}
 
+		//generates a random position in the room for the spawned objects
 		private Vector3 RandomPosition(Vector3 _objSize, Transform _room) {
 			Vector3 _roomSize = _room.Find("Ground").localScale /2;
 

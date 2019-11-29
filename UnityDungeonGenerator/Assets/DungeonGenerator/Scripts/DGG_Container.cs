@@ -22,7 +22,7 @@ namespace Funtools.DungeonGenerator {
 		}
 
 		public string roomNames = "Room";
-		public int roomWidth = 1, roomLength = 1, roomHeight = 1;
+		public float roomWidth = 1, roomLength = 1, roomHeight = 1;
 		public int roomAmount = 1, doorAmount = 1;
 
 		public Material groundMaterial, wallMaterial, ceilingMaterial;
@@ -31,8 +31,9 @@ namespace Funtools.DungeonGenerator {
 		private SerializedObject serializedObject;
 		public SerializedObject SerializedObject {
 			get {
-				if(serializedObject == null)
+				if(serializedObject == null) {
 					serializedObject = new SerializedObject(this);
+				}
 
 				return serializedObject;
 			} set {
