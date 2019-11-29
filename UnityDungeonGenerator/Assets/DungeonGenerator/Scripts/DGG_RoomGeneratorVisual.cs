@@ -28,27 +28,27 @@ namespace Funtools.DungeonGenerator {
 
 		private void DrawGeneralSettings() {
 			GUILayout.BeginHorizontal();
-			RoomInfo.Instance.roomNames = EditorGUILayout.TextField("Room Names", RoomInfo.Instance.roomNames);
-			RoomInfo.Instance.roomAmount = EditorGUILayout.IntField("Amount", RoomInfo.Instance.roomAmount);
-			RoomInfo.Instance.roomType = (RoomType) EditorGUILayout.EnumPopup("Type", RoomInfo.Instance.roomType);
+			DGG_RoomInfo.Instance.roomNames = EditorGUILayout.TextField("Room Names", DGG_RoomInfo.Instance.roomNames);
+			DGG_RoomInfo.Instance.roomAmount = EditorGUILayout.IntField("Amount", DGG_RoomInfo.Instance.roomAmount);
+			DGG_RoomInfo.Instance.roomType = (RoomType) EditorGUILayout.EnumPopup("Type", DGG_RoomInfo.Instance.roomType);
 			GUILayout.EndHorizontal();
 		}
 
 		private void DrawSizeSettings() {
 			GUILayout.BeginHorizontal();
-			RoomInfo.Instance.roomWidth = EditorGUILayout.FloatField("Width", RoomInfo.Instance.roomWidth);
-			RoomInfo.Instance.roomHeight = EditorGUILayout.FloatField("Height", RoomInfo.Instance.roomHeight);
-			RoomInfo.Instance.roomLength = EditorGUILayout.FloatField("Length", RoomInfo.Instance.roomLength);
+			DGG_RoomInfo.Instance.roomWidth = EditorGUILayout.FloatField("Width", DGG_RoomInfo.Instance.roomWidth);
+			DGG_RoomInfo.Instance.roomHeight = EditorGUILayout.FloatField("Height", DGG_RoomInfo.Instance.roomHeight);
+			DGG_RoomInfo.Instance.roomLength = EditorGUILayout.FloatField("Length", DGG_RoomInfo.Instance.roomLength);
 			GUILayout.EndHorizontal();
 		}
 
 		private void DrawMaterialSettings() {
 #pragma warning disable CS0618 // Type or member is obsolete
 			GUILayout.BeginHorizontal();
-			RoomInfo.Instance.groundMaterial = (Material) EditorGUILayout.ObjectField("Ground Material", RoomInfo.Instance.groundMaterial, typeof(Material));
-			RoomInfo.Instance.wallMaterial = (Material) EditorGUILayout.ObjectField("Wall Material", RoomInfo.Instance.wallMaterial, typeof(Material));
+			DGG_RoomInfo.Instance.groundMaterial = (Material) EditorGUILayout.ObjectField("Ground Material", DGG_RoomInfo.Instance.groundMaterial, typeof(Material));
+			DGG_RoomInfo.Instance.wallMaterial = (Material) EditorGUILayout.ObjectField("Wall Material", DGG_RoomInfo.Instance.wallMaterial, typeof(Material));
 			/*disabled cause its not yet implemented
-			RoomInfo.Instance.ceilingMaterial = (Material) EditorGUILayout.ObjectField("Ceiling Material", RoomInfo.Instance.ceilingMaterial, typeof(Material));
+			DGG_RoomInfo.Instance.ceilingMaterial = (Material) EditorGUILayout.ObjectField("Ceiling Material", DGG_RoomInfo.Instance.ceilingMaterial, typeof(Material));
 			*/
 			GUILayout.EndHorizontal();
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -56,32 +56,32 @@ namespace Funtools.DungeonGenerator {
 
 		private void DrawBaseRoomSettings() {
 #pragma warning disable CS0618 // Type or member is obsolete
-			RoomInfo.Instance.baseRoom = (Transform) EditorGUILayout.ObjectField("Base Room", RoomInfo.Instance.baseRoom, typeof(Transform));
+			DGG_RoomInfo.Instance.baseRoom = (Transform) EditorGUILayout.ObjectField("Base Room", DGG_RoomInfo.Instance.baseRoom, typeof(Transform));
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		private void DrawDoorSettings() {
 #pragma warning disable CS0618 // Type or member is obsolete
 			GUILayout.BeginHorizontal();
-			RoomInfo.Instance.doorAmount = EditorGUILayout.IntSlider("Door Amount", RoomInfo.Instance.doorAmount, RoomInfo.minDoors, RoomInfo.maxDoors);
-			RoomInfo.Instance.doorPrefab = (Transform) EditorGUILayout.ObjectField("Door", RoomInfo.Instance.doorPrefab, typeof(Transform));
+			DGG_RoomInfo.Instance.doorAmount = EditorGUILayout.IntSlider("Door Amount", DGG_RoomInfo.Instance.doorAmount, DGG_RoomInfo.minDoors, DGG_RoomInfo.maxDoors);
+			DGG_RoomInfo.Instance.doorPrefab = (Transform) EditorGUILayout.ObjectField("Door", DGG_RoomInfo.Instance.doorPrefab, typeof(Transform));
 			GUILayout.EndHorizontal();			
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		private void DrawObjectList() {
-			if(!RoomInfo.Instance.isInitialized) {
-				RoomInfo.Instance.myList = new ReorderableList(RoomInfo.Instance.SerializedObject, RoomInfo.Instance.SerializedObject.FindProperty("objects"), true, true, true, true) {
+			if(!DGG_RoomInfo.Instance.isInitialized) {
+				DGG_RoomInfo.Instance.myList = new ReorderableList(DGG_RoomInfo.Instance.SerializedObject, DGG_RoomInfo.Instance.SerializedObject.FindProperty("objects"), true, true, true, true) {
 					drawHeaderCallback = (Rect rect) => {
 						EditorGUI.LabelField(rect, "Objects to spawn");
 					}
 				};
-				RoomInfo.Instance.isInitialized = true;
+				DGG_RoomInfo.Instance.isInitialized = true;
 			}
 
-			if(RoomInfo.Instance.myList.count > 0) {
-				RoomInfo.Instance.myList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
-					var element = RoomInfo.Instance.myList.serializedProperty.GetArrayElementAtIndex(index);
+			if(DGG_RoomInfo.Instance.myList.count > 0) {
+				DGG_RoomInfo.Instance.myList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
+					var element = DGG_RoomInfo.Instance.myList.serializedProperty.GetArrayElementAtIndex(index);
 					rect.y += 2;
 
 					EditorGUI.LabelField(
@@ -96,13 +96,13 @@ namespace Funtools.DungeonGenerator {
 				};
 			}
 
-			RoomInfo.Instance.SerializedObject.Update();
-			RoomInfo.Instance.myList.DoLayoutList();
-			RoomInfo.Instance.SerializedObject.ApplyModifiedProperties();
+			DGG_RoomInfo.Instance.SerializedObject.Update();
+			DGG_RoomInfo.Instance.myList.DoLayoutList();
+			DGG_RoomInfo.Instance.SerializedObject.ApplyModifiedProperties();
 		}
 
 		private void DrawSaveSettings() {
-			RoomInfo.Instance.savePath = EditorGUILayout.TextField("Save Path", RoomInfo.Instance.savePath);
+			DGG_RoomInfo.Instance.savePath = EditorGUILayout.TextField("Save Path", DGG_RoomInfo.Instance.savePath);
 			if(GUILayout.Button("Generate rooms")) {
 				DGG_RoomGeneratorFunctional.Instance.Generate();
 			}

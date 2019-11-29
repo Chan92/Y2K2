@@ -25,16 +25,16 @@ namespace Funtools.DungeonGenerator {
 			int _nameCounter = 1;
 
 			//generates the amount of rooms requested
-			for(int i = 0; i < RoomInfo.Instance.roomAmount; i++) {
-				string _newName = RoomInfo.Instance.roomNames + _nameCounter.ToString();
+			for(int i = 0; i < DGG_RoomInfo.Instance.roomAmount; i++) {
+				string _newName = DGG_RoomInfo.Instance.roomNames + _nameCounter.ToString();
 
 				//if an object with the name already exist, update the counter
-				while(File.Exists("Assets/" + RoomInfo.Instance.savePath + _newName + ".prefab")) {
+				while(File.Exists("Assets/" + DGG_RoomInfo.Instance.savePath + _newName + ".prefab")) {
 					_nameCounter++;
-					_newName = RoomInfo.Instance.roomNames + _nameCounter.ToString();
+					_newName = DGG_RoomInfo.Instance.roomNames + _nameCounter.ToString();
 				}
 
-				if(RoomInfo.Instance.baseRoom == null) {
+				if(DGG_RoomInfo.Instance.baseRoom == null) {
 					CreateBaseRoom();
 				} else {
 					ModifyBaseRoom();
@@ -43,7 +43,7 @@ namespace Funtools.DungeonGenerator {
 				AddRoomDoors(newRoom.transform);
 				FillRoom(newRoom.transform);
 
-				string path = Path.Combine(Application.dataPath, RoomInfo.Instance.savePath);
+				string path = Path.Combine(Application.dataPath, DGG_RoomInfo.Instance.savePath);
 				path.Replace("\\", "/");
 				PrefabUtility.SaveAsPrefabAsset(newRoom, path + _newName + ".prefab");
 				DestroyImmediate(newRoom, false);				
@@ -55,7 +55,7 @@ namespace Funtools.DungeonGenerator {
 		private void SetRoomType(GameObject _obj) {
 			System.Type t = System.Type.GetType("Funtools.DungeonGenerator.DGG_RoomType");
 			_obj.AddComponent(t);
-			_obj.GetComponent<DGG_RoomType>().SetType(RoomInfo.Instance.roomType);
+			_obj.GetComponent<DGG_RoomType>().SetType(DGG_RoomInfo.Instance.roomType);
 		}
 
 		private void AddRoomDoors(Transform _room) {
@@ -64,18 +64,18 @@ namespace Funtools.DungeonGenerator {
 
 		//add objects to the room
 		private void FillRoom(Transform _room) {
-			if(RoomInfo.Instance.objects == null) {
+			if(DGG_RoomInfo.Instance.objects == null) {
 				return;
 			}
 
-			if(RoomInfo.Instance.objects.Count < 1) {
+			if(DGG_RoomInfo.Instance.objects.Count < 1) {
 				return;
 			}
 
-			for(int i = 0; i < RoomInfo.Instance.objects.Count; i++) {
-				if(RoomInfo.Instance.objects[i].objectPrefab != null && RoomInfo.Instance.objects[i].objectAmount >= 1) {
-					for(int _object = 0; _object < RoomInfo.Instance.objects[i].objectAmount; _object++) {
-						Transform _newObject = Instantiate(RoomInfo.Instance.objects[i].objectPrefab);
+			for(int i = 0; i < DGG_RoomInfo.Instance.objects.Count; i++) {
+				if(DGG_RoomInfo.Instance.objects[i].objectPrefab != null && DGG_RoomInfo.Instance.objects[i].objectAmount >= 1) {
+					for(int _object = 0; _object < DGG_RoomInfo.Instance.objects[i].objectAmount; _object++) {
+						Transform _newObject = Instantiate(DGG_RoomInfo.Instance.objects[i].objectPrefab);
 						_newObject.parent = _room;
 						_newObject.localPosition = RandomPosition(_newObject.localScale, _room);
 					}
@@ -90,15 +90,15 @@ namespace Funtools.DungeonGenerator {
 
 			GameObject _ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
 			_ground.name = "Ground";
-			_ground.transform.localScale = new Vector3(RoomInfo.Instance.roomWidth * roomSizeMultiplier, groundHeight, RoomInfo.Instance.roomLength * roomSizeMultiplier);
+			_ground.transform.localScale = new Vector3(DGG_RoomInfo.Instance.roomWidth * roomSizeMultiplier, groundHeight, DGG_RoomInfo.Instance.roomLength * roomSizeMultiplier);
 			_ground.transform.parent = _newBaseRoom.transform;
-			SetMaterial(_ground, RoomInfo.Instance.groundMaterial);
+			SetMaterial(_ground, DGG_RoomInfo.Instance.groundMaterial);
 
 			for(int i = 0; i < 4; i++) {
 				GameObject _wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
 				_wall.name = "Wall " + (i + 1);
 				_wall.transform.parent = _newBaseRoom.transform;
-				SetMaterial(_wall, RoomInfo.Instance.wallMaterial);
+				SetMaterial(_wall, DGG_RoomInfo.Instance.wallMaterial);
 				Repositioning(_wall.transform, i, _positionModifier);
 				_positionModifier *= -1;
 			}
@@ -108,14 +108,14 @@ namespace Funtools.DungeonGenerator {
 
 		private void ModifyBaseRoom() {
 			float _positionModifier = 1;
-			GameObject _baseRoomCopy = (GameObject) PrefabUtility.InstantiatePrefab(RoomInfo.Instance.baseRoom.gameObject);
+			GameObject _baseRoomCopy = (GameObject) PrefabUtility.InstantiatePrefab(DGG_RoomInfo.Instance.baseRoom.gameObject);
 			SetRoomType(_baseRoomCopy);
 
 			Transform _groundObj = _baseRoomCopy.transform.Find("Ground");
 			if(_groundObj) {
 				Vector3 _oldGroundSize = _groundObj.localScale;
-				_groundObj.localScale = new Vector3(roomSizeMultiplier * RoomInfo.Instance.roomWidth, groundHeight, roomSizeMultiplier * RoomInfo.Instance.roomLength);
-				SetMaterial(_groundObj.gameObject, RoomInfo.Instance.groundMaterial);
+				_groundObj.localScale = new Vector3(roomSizeMultiplier * DGG_RoomInfo.Instance.roomWidth, groundHeight, roomSizeMultiplier * DGG_RoomInfo.Instance.roomLength);
+				SetMaterial(_groundObj.gameObject, DGG_RoomInfo.Instance.groundMaterial);
 			}
 
 			for(int i = 0; i < _baseRoomCopy.transform.childCount; i++) {
@@ -128,7 +128,7 @@ namespace Funtools.DungeonGenerator {
 
 				if(_wallObj) {
 					_wallObj.name = ("Wall " + i);
-					SetMaterial(_wallObj.gameObject, RoomInfo.Instance.wallMaterial);
+					SetMaterial(_wallObj.gameObject, DGG_RoomInfo.Instance.wallMaterial);
 					Repositioning(_wallObj, i, _positionModifier);
 				}
 
@@ -149,9 +149,9 @@ namespace Funtools.DungeonGenerator {
 		//setting the object  on the correct scale and position
 		private void Repositioning(Transform _obj, int _counter, float _positionModifier) {
 			Vector3 _size = Vector3.one;
-			_size.x = RoomInfo.Instance.roomWidth;
-			_size.y = RoomInfo.Instance.roomHeight;
-			_size.z = RoomInfo.Instance.roomLength;
+			_size.x = DGG_RoomInfo.Instance.roomWidth;
+			_size.y = DGG_RoomInfo.Instance.roomHeight;
+			_size.z = DGG_RoomInfo.Instance.roomLength;
 			_size *= roomSizeMultiplier;
 
 			if(_counter < 2) {

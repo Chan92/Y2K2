@@ -5,17 +5,17 @@ using UnityEditorInternal;
 
 namespace Funtools.DungeonGenerator {
 	[System.Serializable]
-	public struct ObjectList {
+	public struct DGG_ObjectList {
 		public int objectAmount;
 		public Transform objectPrefab;
 	}
 
-	public class RoomInfo :ScriptableObject {
-		static RoomInfo instance;
-		public static RoomInfo Instance {
+	public class DGG_RoomInfo :ScriptableObject {
+		static DGG_RoomInfo instance;
+		public static DGG_RoomInfo Instance {
 			get {
 				if(instance == null) {
-					instance = new RoomInfo();
+					instance = new DGG_RoomInfo();
 				}
 				return instance;
 			}
@@ -43,7 +43,7 @@ namespace Funtools.DungeonGenerator {
 		public bool isInitialized = false;
 
 		[SerializeField]
-		public List<ObjectList> objects;
+		public List<DGG_ObjectList> objects;
 		public RoomType roomType;
 
 		public string savePath = "DungeonGenerator/Prefabs/Rooms/";
