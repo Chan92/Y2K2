@@ -26,12 +26,12 @@ namespace Funtools.DungeonGenerator {
 
 			//generates the amount of rooms requested
 			for(int i = 0; i < DGG_RoomInfo.Instance.roomAmount; i++) {
-				string _newName = DGG_RoomInfo.Instance.roomNames + _nameCounter.ToString();
+				string _newName = DGG_RoomInfo.Instance.roomNames + "_" + _nameCounter.ToString();
 
 				//if an object with the name already exist, update the counter
 				while(File.Exists("Assets/" + DGG_RoomInfo.Instance.savePath + _newName + ".prefab")) {
 					_nameCounter++;
-					_newName = DGG_RoomInfo.Instance.roomNames + _nameCounter.ToString();
+					_newName = DGG_RoomInfo.Instance.roomNames + "_" + _nameCounter.ToString();
 				}
 
 				if(DGG_RoomInfo.Instance.baseRoom == null) {

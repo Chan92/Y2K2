@@ -4,13 +4,19 @@ using UnityEditorInternal;
 
 namespace Funtools.DungeonGenerator {
 	public class DGG_RoomGeneratorVisual :EditorWindow {
+		private const float widthCheck = 500;
+		private Vector2 scrollpos;
+
 		[MenuItem("Window/DungeonGenerator")]
 		public static void ShowWindow() {
 			GetWindow<DGG_RoomGeneratorVisual>("DungeonGenerator");
 		}
 
+
+
 		//Draws elements to the window
 		private void OnGUI() {
+			//Debug.Log("size: " + position.width + " x " + position.height);
 			EditorGUILayout.Space();
 			DrawGeneralSettings();
 
@@ -27,26 +33,81 @@ namespace Funtools.DungeonGenerator {
 		}
 
 		private void DrawGeneralSettings() {
-			GUILayout.BeginHorizontal();
-			DGG_RoomInfo.Instance.roomNames = EditorGUILayout.TextField("Room Names", DGG_RoomInfo.Instance.roomNames);
-			DGG_RoomInfo.Instance.roomAmount = EditorGUILayout.IntField("Amount", DGG_RoomInfo.Instance.roomAmount);
-			DGG_RoomInfo.Instance.roomType = (RoomType) EditorGUILayout.EnumPopup("Type", DGG_RoomInfo.Instance.roomType);
+			DGG_RoomInfo.Instance.roomNames = EditorGUILayout.TextField("Room Name", DGG_RoomInfo.Instance.roomNames);
+			Rect rect = (Rect) EditorGUILayout.BeginHorizontal();
+
+				float _edgeGab = 5;
+				float _labelSize = 35;
+				float _inputSize = position.width * 0.2f;
+
+				DGG_RoomInfo.Instance.roomAmount = EditorGUILayout.IntField("Amount", DGG_RoomInfo.Instance.roomAmount, GUILayout.Width(200));
+
+				EditorGUI.LabelField(
+					new Rect(position.width - _inputSize - _edgeGab - _labelSize, rect.y, _labelSize, EditorGUIUtility.singleLineHeight), "Type");
+				DGG_RoomInfo.Instance.roomType = (RoomType) EditorGUI.EnumPopup(
+					new Rect(position.width - _inputSize - _edgeGab, rect.y, _inputSize, EditorGUIUtility.singleLineHeight), DGG_RoomInfo.Instance.roomType);
+
 			GUILayout.EndHorizontal();
 		}
 
 		private void DrawSizeSettings() {
-			GUILayout.BeginHorizontal();
-			DGG_RoomInfo.Instance.roomWidth = EditorGUILayout.FloatField("Width", DGG_RoomInfo.Instance.roomWidth);
-			DGG_RoomInfo.Instance.roomHeight = EditorGUILayout.FloatField("Height", DGG_RoomInfo.Instance.roomHeight);
-			DGG_RoomInfo.Instance.roomLength = EditorGUILayout.FloatField("Length", DGG_RoomInfo.Instance.roomLength);
+			Rect rect = (Rect) EditorGUILayout.BeginHorizontal();
+				float _edgeGab = 5;
+
+				float _labelSize = 15;
+				float _inputSize = position.width * 0.15f;
+				float _inputGab = (position.width * 0.25f) + _edgeGab;
+
+				string _width = "X";
+				string _height = "Y";
+				string _length = "Z";
+
+				if(position.width > widthCheck) {
+					_labelSize = 45;
+
+					_width = "Width";
+					_height = "Height";
+					_length = "Length";
+				}
+
+				EditorGUILayout.LabelField("Size");
+
+				//Width
+				EditorGUI.LabelField(
+					new Rect(position.width - (_inputGab * 2) - _inputSize - _labelSize, rect.y, _labelSize, EditorGUIUtility.singleLineHeight), _width);
+				DGG_RoomInfo.Instance.roomWidth = EditorGUI.FloatField(
+					new Rect(position.width - (_inputGab * 2) - _inputSize, rect.y, _inputSize, EditorGUIUtility.singleLineHeight), DGG_RoomInfo.Instance.roomWidth);
+
+				//Height
+				EditorGUI.LabelField(
+					new Rect(position.width - _inputGab - _inputSize - _labelSize, rect.y, _labelSize, EditorGUIUtility.singleLineHeight), _height);
+				DGG_RoomInfo.Instance.roomHeight = EditorGUI.FloatField(
+					new Rect(position.width - _inputGab - _inputSize, rect.y, _inputSize, EditorGUIUtility.singleLineHeight), DGG_RoomInfo.Instance.roomHeight);
+
+				//Length
+				EditorGUI.LabelField(
+					new Rect(position.width - _inputSize - _edgeGab - _labelSize, rect.y, _labelSize, EditorGUIUtility.singleLineHeight), _length);
+				DGG_RoomInfo.Instance.roomLength = EditorGUI.FloatField(
+					new Rect(position.width - _inputSize - _edgeGab, rect.y, _inputSize, EditorGUIUtility.singleLineHeight), DGG_RoomInfo.Instance.roomLength);
+
 			GUILayout.EndHorizontal();
 		}
 
 		private void DrawMaterialSettings() {
 #pragma warning disable CS0618 // Type or member is obsolete
-			GUILayout.BeginHorizontal();
-			DGG_RoomInfo.Instance.groundMaterial = (Material) EditorGUILayout.ObjectField("Ground Material", DGG_RoomInfo.Instance.groundMaterial, typeof(Material));
-			DGG_RoomInfo.Instance.wallMaterial = (Material) EditorGUILayout.ObjectField("Wall Material", DGG_RoomInfo.Instance.wallMaterial, typeof(Material));
+			Rect rect = (Rect) EditorGUILayout.BeginHorizontal();
+			float _edgeGab = 5;
+			float _labelSize = 80;
+			float _inputSize = position.width * 0.15f;
+
+			DGG_RoomInfo.Instance.groundMaterial = (Material) EditorGUILayout.ObjectField("Ground Material", DGG_RoomInfo.Instance.groundMaterial, typeof(Material), GUILayout.Width (250));
+
+			EditorGUI.LabelField(
+					new Rect(position.width - _inputSize - _edgeGab - _labelSize, rect.y, _labelSize, EditorGUIUtility.singleLineHeight), "Wall Material");
+			DGG_RoomInfo.Instance.wallMaterial = (Material) EditorGUI.ObjectField(
+				new Rect(position.width - _inputSize - _edgeGab, rect.y, _inputSize, EditorGUIUtility.singleLineHeight), DGG_RoomInfo.Instance.wallMaterial, typeof(Material));
+
+
 			/*disabled cause its not yet implemented
 			DGG_RoomInfo.Instance.ceilingMaterial = (Material) EditorGUILayout.ObjectField("Ceiling Material", DGG_RoomInfo.Instance.ceilingMaterial, typeof(Material));
 			*/
@@ -70,6 +131,12 @@ namespace Funtools.DungeonGenerator {
 		}
 
 		private void DrawObjectList() {
+			float _scrollSize = 250;
+
+			if(position.width > widthCheck) {
+				_scrollSize = 100;
+			}
+
 			if(!DGG_RoomInfo.Instance.isInitialized) {
 				DGG_RoomInfo.Instance.myList = new ReorderableList(DGG_RoomInfo.Instance.SerializedObject, DGG_RoomInfo.Instance.SerializedObject.FindProperty("objects"), true, true, true, true) {
 					drawHeaderCallback = (Rect rect) => {
@@ -96,9 +163,11 @@ namespace Funtools.DungeonGenerator {
 				};
 			}
 
+			scrollpos = EditorGUILayout.BeginScrollView(scrollpos, false, false, GUILayout.Height(_scrollSize));
 			DGG_RoomInfo.Instance.SerializedObject.Update();
 			DGG_RoomInfo.Instance.myList.DoLayoutList();
 			DGG_RoomInfo.Instance.SerializedObject.ApplyModifiedProperties();
+			GUILayout.EndScrollView();
 		}
 
 		private void DrawSaveSettings() {
